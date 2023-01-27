@@ -1,4 +1,5 @@
 import os, sys
+import json
 from pymongo import MongoClient
 
 """
@@ -29,6 +30,9 @@ os.scandir - returns generator object
 # all .log files
 location = '/Users/davideynon/Projects/logs/pytwitservice/'
 
+# all acceptable users
+expected_users = ['TCSGottardo']
+
 data = []
 
 idx = 0
@@ -52,13 +56,14 @@ for dir_obj in os.scandir(location): # generator
 
     log_file = dir_obj.path
 
-    if log_file.endswith("log.log"):
+    # --- log.log files
+    if log_file.endswith("log.log"): 
 
         for line in (ln for ln in open(log_file, 'r', encoding='utf-8')): # generator
             
             try:
                 tweet = {}
-                print(line)
+                #print(line)
                 
                 # transform to our accepted mongodb entry criteria
                 # Tweet ID (key=id)
@@ -73,16 +78,26 @@ for dir_obj in os.scandir(location): # generator
                 # Content (key=content)
                 tweet['content'] = line.split('Text=')[1]
 
-                print(tweet)
+                #print(tweet)
 
-                if tweet['user'] == 'TCSGottardo':
+                if tweet['user'] in expected_users:
                     # insert into mongodb
                     post_id = collection.insert_one(tweet)
                     print(post_id.acknowledged, post_id.inserted_id)
 
             except Exception as e:
-                print("NOT ADDED-->", line)
-                continue                
-
+                #print("NOT ADDED-->", line)
+                continue               
+    
+    # --- json files
+    elif log_file.endswith(".json"):
+        with open(log_file, 'r', encoding='utf-8') as json_log:
+            data = json.load(json_log)
+            for tweet in data:
+                try:
+                    post_id = collection.insert_one(tweet)
+                    print(post_id.acknowledged, post_id.inserted_id)
+                except Exception as e:
+                    continue
 
 print(collection.count_documents({}), 'total unique')
