@@ -74,25 +74,15 @@ for dir_obj in os.scandir(location): # generator
                 tweet['content'] = line.split('Text=')[1]
 
                 print(tweet)
+
+                if tweet['user'] == 'TCSGottardo':
+                    # insert into mongodb
+                    post_id = collection.insert_one(tweet)
+                    print(post_id.acknowledged, post_id.inserted_id)
+
             except Exception as e:
                 print("NOT ADDED-->", line)
-                continue
+                continue                
 
 
-        # insert into mongodb
-        post_id = collection.insert_one(tweet)
-        print(post_id.acknowledged, post_id.inserted_id)
-        
-        ids.append(post_id)
-        print(len(ids))
-
-        for post in collection.find({}):
-            print(post)
-
-        total += collection.count_documents({})
-
-print(total)
-print(len(ids))
-
-print(from_directions)
-print(to_directions)
+print(collection.count_documents({}), 'total unique')
