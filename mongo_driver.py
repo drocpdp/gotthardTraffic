@@ -43,7 +43,7 @@ class MongoDriver:
             self.collection = collection
 
     def create_index(self, collection_name, fields=None):
-        self.collection.create_index([("id",1),("user",1)], unique=True)
+        self.collection.create_index([("id",1)], unique=True)
 
     def delete_all(self):
         self.collection.delete_all({})
