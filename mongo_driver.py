@@ -55,8 +55,8 @@ if __name__=="__main__":
     mi.get_database('gottardo')
     mi.get_collection('tweets')
     
-    #mi.create_database('gottardo')
-    #mi.create_collection('tweets')
+    mi.create_database('gottardo')
+    mi.create_collection('tweets')
     mi.create_index('')
 
 
