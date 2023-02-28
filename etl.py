@@ -100,8 +100,9 @@ class ETL(MongoDriver):
                     data = json.load(json_log)
                     for tweet in data:
                         try:
-                            post_id = collection.insert_one(tweet)
-                            print(post_id.acknowledged, post_id.inserted_id)
+                            if tweet['user'] in self.expected_users:
+                                post_id = collection.insert_one(tweet)
+                                print(post_id.acknowledged, post_id.inserted_id)
                         except Exception as e:
                             continue
 
