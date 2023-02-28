@@ -85,7 +85,7 @@ class ETL(MongoDriver):
 
                         #print(tweet)
 
-                        if tweet['user'] in expected_users:
+                        if tweet['user'] in self.expected_users:
                             # insert into mongodb
                             post_id = collection.insert_one(tweet)
                             print(post_id.acknowledged, post_id.inserted_id)
