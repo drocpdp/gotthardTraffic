@@ -8,14 +8,38 @@ Uses pymongo library.
 REMEMBER: MongoDB waits until you have inserted content before creating DB/collections
 
 """
+import os
+import urllib
 from pymongo import MongoClient
 
 class MongoDriver:
 
     def __init__(self):
-        self.client = MongoClient()
+        self.client = self.get_connection_uri_connection_string()
         self.db = None
         self.collection = None
+    
+    def _get_username(self):
+        return os.environ['MONGODB_ATLAS_USERNAME']
+    
+    def _get_encoded_password(self):
+        plaintext_pw = os.environ['MONGODB_ATLAS_PASSWORD']
+        encoded_pw = urllib.parse.quote(plaintext_pw)
+        return encoded_pw
+    
+    def _get_cluster_uri(self):
+        return os.environ['MONGODB_ATLAS_CLUSTER_URI']
+    
+    def _get_connection_string(self):
+        user = self._get_username()
+        password = self._get_encoded_password()
+        cluster_uri = self._get_cluster_uri()
+        connect = f"mongodb+srv://{user}:{password}@{cluster_uri}/?retryWrites=true&w=majority"
+        return connect
+    
+    def get_connection_uri_connection_string(self):
+        client = MongoClient(self._get_connection_string(),tlsAllowInvalidCertificates=True)
+        return client
 
     def get_database(self, db_name):
         db = self.client.get_database(db_name)
@@ -52,11 +76,11 @@ class MongoDriver:
 
 if __name__=="__main__":
     mi = MongoDriver()
-    mi.get_database('gottardo')
-    mi.get_collection('tweets')
+    #mi.get_database('gottardo')
+    #mi.get_collection('tweets')
     
-    #mi.create_database('gottardo')
-    #mi.create_collection('tweets')
+    mi.create_database('gottardo')
+    mi.create_collection('tweets')
     mi.create_index('')
 
 
