@@ -72,7 +72,7 @@ class ETL(MongoDriver):
                         
                         # transform to our accepted mongodb entry criteria
                         # Tweet ID (key=id)
-                        tweet['id'] = line.split('ID=')[1].split(',')[0]
+                        tweet['id'] = int(line.split('ID=')[1].split(',')[0])
 
                         # User (key=user)
                         tweet['user'] = line.split('UserName=')[1].split(',')[0]
@@ -101,6 +101,7 @@ class ETL(MongoDriver):
                     for tweet in data:
                         try:
                             if tweet['user'] in self.expected_users:
+                                tweet['id'] = int(tweet['id'])
                                 post_id = collection.insert_one(tweet)
                                 print(post_id.acknowledged, post_id.inserted_id)
                         except Exception as e:
